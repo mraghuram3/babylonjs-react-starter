@@ -11,3 +11,25 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+body,#root{
+  height: 100vh;
+  width: 100vw;
+}
+
+.App{
+  height: 100%;
+  width: 100%;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#canvasZone, #my-canvas{
+  height: 100%;
+  width: 100%;
+}
+canvas {
+  outline: none;
+}
