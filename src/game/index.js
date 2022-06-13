@@ -7,6 +7,8 @@ import {
   MeshBuilder,
   StandardMaterial,
   Texture,
+  CannonJSPlugin,
+  PhysicsImpostor
 } from "@babylonjs/core";
 
 import { GridMaterial } from "@babylonjs/materials";
@@ -61,6 +63,15 @@ function GameScene() {
     let ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, scene); // create a ground by passing width and height
     ground.material = new GridMaterial("groundMaterial", scene); // creating a grid material and assigning it as material for ground
 
+    scene.enablePhysics(null, new CannonJSPlugin());
+
+    ground.physicsImpostor = new PhysicsImpostor(
+      ground,
+      PhysicsImpostor.BoxImpostor,
+      { mass: 0, restitution: 0.9 },
+      scene
+    );
+
     createBoxs(BOXES)
 
     //We add the base of the tank (Cube)
@@ -105,6 +116,12 @@ function GameScene() {
       );
       box.material = matBox;
       box.position.set(item.x, item.y, item.z);
+      box.physicsImpostor = new PhysicsImpostor(
+        box,
+        PhysicsImpostor.BoxImpostor,
+        { mass: 0.2, friction: 0.5, restitution: 0.9 },
+        scene
+      );
     });
   };
 
