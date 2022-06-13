@@ -30,7 +30,7 @@ let BOXES = [
 ];
 
 var cannonfoot, cannontube;
-var itarg;
+var itarg, matBB;
 
 function GameScene() {
 
@@ -133,7 +133,33 @@ function GameScene() {
   };
 
   const firebullet = (power, scene) => {
-    //firebullet
+    //The sphere-shaped bullet is created
+    matBB = new StandardMaterial("matBB", scene);
+    matBB.emissiveTexture = new Texture("textures/SunDiffuse.png", scene);
+    let bullet = MeshBuilder.CreateSphere(
+      "Bullet",
+      { segments: 6, diameter: 1 },
+      scene
+    );
+    bullet.material = matBB;
+    bullet.position = cannontube.getAbsolutePosition(); //gun-based position
+    bullet.physicsImpostor = new PhysicsImpostor(
+      bullet,
+      PhysicsImpostor.SphereImpostor,
+      { mass: 0.1, friction: 0.5, restitution: 0.3 },
+      scene
+    );
+    //the initial direction guided by the pointing guide cube
+    let dir = itarg
+      .getAbsolutePosition()
+      .subtract(cannontube.getAbsolutePosition()); //Initial impulse in the direction of the guide hub based on the force indicated in the variable: power
+    bullet.physicsImpostor.applyForce(
+      dir.scale(power),
+      cannontube.getAbsolutePosition()
+    );
+    window.setTimeout(function () {
+      if (bullet) bullet.dispose();
+    }, 5000);
   }
 
   const onKeyPress = (evt) => {
