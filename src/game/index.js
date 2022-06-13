@@ -5,6 +5,8 @@ import {
   Vector3,
   HemisphericLight,
   MeshBuilder,
+  StandardMaterial,
+  Texture,
 } from "@babylonjs/core";
 
 import { GridMaterial } from "@babylonjs/materials";
@@ -18,6 +20,12 @@ import styles from "./game.module.css";
 window.CANNON = CANNON;
 
 
+let BOXES = [
+  { x: -10, y: 3, z: -10 },
+  { x: 10, y: 3, z: 10 },
+  { x: -10, y: 3, z: 10 },
+  { x: 10, y: 3, z: -10 },
+];
 
 function GameScene() {
 
@@ -50,8 +58,25 @@ function GameScene() {
     let ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, scene); // create a ground by passing width and height
     ground.material = new GridMaterial("groundMaterial", scene); // creating a grid material and assigning it as material for ground
 
+    createBoxs(BOXES)
 
     // scene.debugLayer.show();
+  };
+
+
+  const createBoxs = (boxes, scene) => {
+    let matBox = new StandardMaterial("matBox3", scene);
+    matBox.diffuseTexture = new Texture("textures/crate.png", scene);
+    
+    boxes.forEach((item, i) => {
+      let box = MeshBuilder.CreateBox(
+        `Box${i}`,
+        { size: 3, width: 3, height: 3, depth: 3 },
+        scene
+      );
+      box.material = matBox;
+      box.position.set(item.x, item.y, item.z);
+    });
   };
 
   
