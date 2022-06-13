@@ -27,6 +27,9 @@ let BOXES = [
   { x: 10, y: 3, z: -10 },
 ];
 
+var cannonfoot, cannontube;
+var itarg;
+
 function GameScene() {
 
   const onSceneReady = (scene, engine, url) => {
@@ -59,6 +62,32 @@ function GameScene() {
     ground.material = new GridMaterial("groundMaterial", scene); // creating a grid material and assigning it as material for ground
 
     createBoxs(BOXES)
+
+    //We add the base of the tank (Cube)
+    cannonfoot = MeshBuilder.CreateBox(
+      "Foot",
+      { width: 4, height: 2, depth: 3 },
+      scene
+    );
+    cannonfoot.position.set(0, 1, 20);
+    cannonfoot.rotation.set(0, 3.1, 0);
+
+    //We put the barrel of the tank (Cylinder)
+    cannontube = MeshBuilder.CreateCylinder(
+      "Tube",
+      { height: 5, diameter: 1, tessellation: 64 },
+      scene
+    );
+    cannontube.position.set(0, 1.5, 2);
+
+    //This cube will work as a shooting guide
+    itarg = MeshBuilder.CreateBox("targ", { size: 1}, scene);
+    itarg.position.y = 10;
+    itarg.visibility = 0.3; //semitransparent
+    itarg.parent = cannontube; //Defined as a child component of the barrel
+
+    cannontube.rotation.set(1.5, 0, 0);
+    cannontube.parent = cannonfoot; //Defined as a child component of the barrel base
 
     // scene.debugLayer.show();
   };
