@@ -4,8 +4,10 @@ import {
   ArcRotateCamera,
   Vector3,
   HemisphericLight,
-  MeshBuilder
+  MeshBuilder,
 } from "@babylonjs/core";
+
+import { GridMaterial } from "@babylonjs/materials";
 
 import { SceneComponent } from "../scene";
 
@@ -31,7 +33,10 @@ function GameScene() {
       new Vector3(0, 0, 0),
       scene
     );
-
+    camera.lowerRadiusLimit = 20; // min zoom
+		camera.upperRadiusLimit = 100; // max zoom
+		camera.lowerBetaLimit = 0.2;
+		camera.upperBetaLimit = 1.2;
     // This attaches the camera to the canvas
     camera.attachControl(canvas, true);
 
@@ -40,13 +45,11 @@ function GameScene() {
     // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.8;
 
-    // Our built-in 'sphere' shape.
-    let sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
-    // Move the sphere upward 1/2 its height
-    sphere.position.y = 1;
 
     // Our built-in 'ground' shape.
-    let ground = MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
+    let ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, scene); // create a ground by passing width and height
+    ground.material = new GridMaterial("groundMaterial", scene); // creating a grid material and assigning it as material for ground
+
 
     // scene.debugLayer.show();
   };
