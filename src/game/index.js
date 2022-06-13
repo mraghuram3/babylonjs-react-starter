@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   ArcRotateCamera,
@@ -33,6 +33,13 @@ var cannonfoot, cannontube;
 var itarg;
 
 function GameScene() {
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyPress);
+    return () => {
+      window.removeEventListener("keydown", onKeyPress);
+    };
+  }, []);
 
   const onSceneReady = (scene, engine, url) => {
 
@@ -125,6 +132,37 @@ function GameScene() {
     });
   };
 
+  const firebullet = (power, scene) => {
+    //firebullet
+  }
+
+  const onKeyPress = (evt) => {
+    if (evt.keyCode === 32) {
+      firebullet(55);
+    } else if (evt.keyCode === 65) {// a rotate cannon left
+      cannonfoot.rotation = cannonfoot.rotation.add(
+        new Vector3(0, -Math.PI / 60, 0)
+      );
+    } else if (evt.keyCode === 68) {// d rotate cannon right
+      cannonfoot.rotation = cannonfoot.rotation.add(
+        new Vector3(0, Math.PI / 60, 0)
+      );
+    } else if (evt.keyCode === 81) {// [ rotate cannon up
+      cannontube.rotation.addInPlace(new Vector3(-Math.PI / 360, 0, 0));
+    } else if (evt.keyCode === 69) {// [ rotate cannon down
+      cannontube.rotation.addInPlace(new Vector3(Math.PI / 360, 0, 0));
+    } else if (evt.keyCode === 87) {// w move cannon forward
+      let posX = Math.sin(cannonfoot.rotation.y);
+      let posZ = Math.cos(cannonfoot.rotation.y);
+      cannonfoot.position.x += posX;
+      cannonfoot.position.z += posZ;
+    } else if (evt.keyCode === 83) {// s move cannon backward
+      let posX = Math.sin(cannonfoot.rotation.y);
+      let posZ = Math.cos(cannonfoot.rotation.y);
+      cannonfoot.position.x -= posX;
+      cannonfoot.position.z -= posZ;
+    }
+  };
   
   /**
    * Will run on every frame render.  We are spinning the box on y-axis.
