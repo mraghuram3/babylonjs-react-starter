@@ -1,0 +1,194 @@
+/* eslint-disable */
+
+
+//------------------------step 1----------------------------
+// create camera
+let camera = new ArcRotateCamera(
+    "camera1",
+    -Math.PI / 2,
+    1.2,
+    50,
+    new Vector3(0, 0, 0),
+    scene
+  );
+  camera.lowerRadiusLimit = 20; // min zoom
+  camera.upperRadiusLimit = 100; // max zoom
+  camera.lowerBetaLimit = 0.2;
+  camera.upperBetaLimit = 1.2;
+  camera.attachControl(canvas, true);// attach camera to canvas so that we can camera by interacting with canvas
+
+  let light = new HemisphericLight("light1", new Vector3(0, 1, 0), scene); //create light
+  light.intensity = 0.8; // default intensity is 1
+
+  let ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, scene); // create a ground by passing width and height
+  ground.material = new GridMaterial("groundMaterial", scene); // creating a grid material and assigning it as material for ground
+//----------------------------------------------------
+
+
+
+//------------------------step 2----------------------------
+
+let BOXES = [
+    { x: -10, y: 3, z: -10 },
+    { x: 10, y: 3, z: 10 },
+    { x: -10, y: 3, z: 10 },
+    { x: 10, y: 3, z: -10 },
+  ];
+
+createBoxs(BOXES);
+
+const createBoxs = (boxes, scene) => {
+    let matBox = new StandardMaterial("matBox3", scene);
+    matBox.diffuseTexture = new Texture("textures/crate.png", scene);
+    
+    boxes.forEach((item, i) => {
+      let box = MeshBuilder.CreateBox(
+        `Box${i}`,
+        { size: 3 },
+        scene
+      );
+      box.material = matBox;
+      box.position.set(item.x, item.y, item.z);
+      box.physicsImpostor = new PhysicsImpostor(
+        box,
+        PhysicsImpostor.BoxImpostor,
+        { mass: 0.2, friction: 0.5, restitution: 0.9 },
+        scene
+      );
+    });
+  };
+//----------------------------------------------------------
+
+//------------------------step 3----------------------------
+var cannonfoot, cannontube, itarg;
+
+//We add the base of the tank (Cube)
+cannonfoot = MeshBuilder.CreateBox(
+    "Foot",
+    { width: 4, height: 2, depth: 3 },
+    scene
+    );
+    cannonfoot.position.set(0, 1, 20);
+    cannonfoot.rotation.set(0, 3.1, 0);
+
+    //We put the barrel of the tank (Cylinder)
+    cannontube = MeshBuilder.CreateCylinder(
+    "Tube",
+    { height: 5, diameter: 1, tessellation: 64 },
+    scene
+    );
+    cannontube.position.set(0, 1.5, 2);
+
+    //This cube will work as a shooting guide
+    itarg = MeshBuilder.CreateBox("targ", { size: 1}, scene);
+    itarg.position.y = 10;
+    itarg.visibility = 0.3; //semitransparent
+    itarg.parent = cannontube; //Defined as a child component of the barrel
+
+    cannontube.rotation.set(1.5, 0, 0);
+    cannontube.parent = cannonfoot; //Defined as a child component of the barrel base
+
+//----------------------------------------------------------
+
+//------------------------step 4----------------------------
+
+scene.enablePhysics(null, new CannonJSPlugin());
+
+ground.physicsImpostor = new PhysicsImpostor(
+    ground,
+    PhysicsImpostor.BoxImpostor,
+    { mass: 0, restitution: 0.9 },
+    scene
+  );
+
+  box.physicsImpostor = new PhysicsImpostor(
+    box,
+    PhysicsImpostor.BoxImpostor,
+    { mass: 0.2, friction: 0.5, restitution: 0.9 },
+    scene
+  );  
+//----------------------------------------------------------
+
+
+//------------------------step 5----------------------------
+useEffect(() => {
+    window.addEventListener("keydown", onKeyPress);
+    return () => {
+      window.removeEventListener("keydown", onKeyPress);
+    };
+  }, []);
+
+
+  const onKeyPress = (evt) => {
+    if (evt.keyCode === 32) {
+    //   firebullet(55);
+    } else if (evt.keyCode === 65) {
+      // [ rotate cannon left
+      cannonfoot.rotation = cannonfoot.rotation.add(
+        new Vector3(0, -Math.PI / 60, 0)
+      );
+    } else if (evt.keyCode === 68) {
+      // ] rotate cannon right
+      cannonfoot.rotation = cannonfoot.rotation.add(
+        new Vector3(0, Math.PI / 60, 0)
+      );
+    } else if (evt.keyCode === 81) {
+      // [ rotate cannon up
+      cannontube.rotation.addInPlace(new Vector3(-Math.PI / 360, 0, 0));
+    } else if (evt.keyCode === 69) {
+      // [ rotate cannon down
+      cannontube.rotation.addInPlace(new Vector3(Math.PI / 360, 0, 0));
+    } else if (evt.keyCode === 87) {
+      var posX = Math.sin(cannonfoot.rotation.y);
+      var posZ = Math.cos(cannonfoot.rotation.y);
+      cannonfoot.position.x += posX;
+      cannonfoot.position.z += posZ;
+    } else if (evt.keyCode === 83) {
+      // https://riptutorial.com/actionscript-3/example/10960/moving-a-point-along-an-angle
+      var posX = Math.sin(cannonfoot.rotation.y);
+      var posZ = Math.cos(cannonfoot.rotation.y);
+      cannonfoot.position.x -= posX;
+      cannonfoot.position.z -= posZ;
+    }
+  };
+  //https://riptutorial.com/actionscript-3/example/10960/moving-a-point-along-an-angle
+
+//----------------------------------------------------------
+
+//------------------------step 6----------------------------
+
+const firebullet = (power, scene) => {
+    //The sphere-shaped bullet is created
+    matBB = new StandardMaterial("matBB", scene);
+    matBB.emissiveTexture = new Texture("textures/SunDiffuse.png", scene);
+
+    let bullet = MeshBuilder.CreateSphere(
+      "Bullet",
+      { diameter: 1 },
+      scene
+    );
+    bullet.material = matBB;
+    bullet.physicsImpostor = new PhysicsImpostor(
+      bullet,
+      PhysicsImpostor.SphereImpostor,
+      { mass: 0.1, friction: 0.5, restitution: 0.3 },
+      scene
+    );
+    
+    bullet.position = cannontube.getAbsolutePosition(); //gun-based position
+
+    //the initial direction guided by the pointing guide cube
+    let dir = itarg
+      .getAbsolutePosition()
+      .subtract(cannontube.getAbsolutePosition()); //Initial impulse in the direction of the guide hub based on the force indicated in the variable: power
+    bullet.physicsImpostor.applyForce(
+      dir.scale(power),
+      cannontube.getAbsolutePosition()
+    );
+    window.setTimeout(function () {
+      if (bullet) bullet.dispose();
+    }, 5000);
+  }; //initial impulse value: Force
+
+
+//----------------------------------------------------------

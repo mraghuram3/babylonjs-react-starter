@@ -22,7 +22,6 @@ function GameScene() {
   const onSceneReady = (scene, engine, url) => {
 
     const canvas = scene.getEngine().getRenderingCanvas();
-
     let camera = new ArcRotateCamera(
       "camera1",
       -Math.PI / 2,
@@ -31,7 +30,6 @@ function GameScene() {
       new Vector3(0, 0, 0),
       scene
     );
-
     // This attaches the camera to the canvas
     camera.attachControl(canvas, true);
 
@@ -41,14 +39,12 @@ function GameScene() {
     light.intensity = 0.8;
 
     // Our built-in 'sphere' shape.
-    let sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2, segments: 32}, scene);
+    let sphere = MeshBuilder.CreateSphere("sphere", {diameter: 2}, scene);
     // Move the sphere upward 1/2 its height
     sphere.position.y = 1;
 
     // Our built-in 'ground' shape.
     let ground = MeshBuilder.CreateGround("ground", {width: 6, height: 6}, scene);
-
-    // scene.debugLayer.show();
   };
 
   
